@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -e
+
+source "./scripts/bootstrap_functions"
+
+echo "Setting up your environment..."
+root_project_dir="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+
+test_dependency "ruby" "ruby" || exit 1
+test_dependency "bundle" "Bundler" "gem install bundler" || exit 1
+
+for project in tracker; do
+  cd $root_project_dir/$project
+
+  __project_dir=${1:-"$(cd "$( dirname "$project" )" && pwd)"}
+
+  echo "Setting up $__project_dir environment..."
+
+  bundle_install && cp_env_example $__project_dir $__project_dir
+
+  echo "$__project_dir Done"
+done
