@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+red="\033[31m"
+green="\033[0;32m"
+white="\033[0;37m"
+reset="\033[0m"
+
+function test_dependency() {
+  if [ ! $(which $1 2> /dev/null) ]; then
+    echo -e "$red  ✖  You need to install $2.\c"
+
+    if [ -n "$3" ]; then
+      echo -e "$white\n     $3\n"
+    else
+      echo " If you use Ubuntu, you can run:"
+      echo -e "$white     sudo apt-get install $2\n"
+    fi
+
+    return 1
+  else
+    echo -e "$green  ✔  $2 is already installed."
+  fi
+
+  echo -e "$reset\c"
+
+  return 0
+}
+
+function cp_env_example() {
+  local __root_dir=$1
+  local __sub_project_dir=$2
+
+  echo "Copying environment files"
+  for example in $(ls $__root_dir/.env.*.example); do
+    local __without_example=${example/.example/}
+
+    echo -e "$green     $example ${__without_example/$__root_dir/$__sub_project_dir}"
+    cp $example ${__without_example/$__root_dir/$__sub_project_dir}
+  done
+
+  echo -e "$reset\c"
+
+  return 0
+}
+
+function bundle_install() {
+  _check_gems || _run_bundle_install
+}
+
+function _check_gems() {
+  bundle check &> /dev/null &&
+    echo -e "$green  ✔  All gems installed." &&
+    echo -e "$reset\c"
+}
+
+function _run_bundle_install() {
+  echo "Installing gems" &&
+    bundle install
+}
