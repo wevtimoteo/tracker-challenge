@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+
+__project=$1
+
+# Use git remotes prefixed with heroku, i.e heroku-remote-name
+__deploy_targets=(
+  ["tracker"]="tracker-challenge"
+)
+
+__remote_repository="${__deploy_targets[$project]}"
+
+echo "> Deploying ${__project} via remote ${__remote_repository}"
+echo `git subtree push --prefix ${__project} heroku-${__remote_repository} master`
